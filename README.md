@@ -50,7 +50,7 @@ Once the tool is installed, you can remove the installation directory by typing 
 
 ```
 cd ~/Downloads          # Go to downloads directory or wherever you downloaded
-rm -d weather
+rm -rf weather
 ```
 
 
