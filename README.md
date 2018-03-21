@@ -170,3 +170,17 @@ To see all bookmarks, numbered:
 To remove a bookmark based on its line number:
 
 	weather -b remove 1
+	
+## Future plans
+
+- [ ] Rewrite the code to make it fully functional on all platforms (currently uses locateme which only works on OS X)
+- [ ] Rewrite the code so it doesn't depend on jq
+- [ ] Add forecast option
+- [ ] Add Twitter option to create tweet version of the output that could be piped to Twitterbot
+
+## Contact details
+Hubert Léveillé Gauvin
+
+Email: leveillegauvin.1@osu.edu  
+LinkedIn: [hleveillegauvin](https://www.linkedin.com/in/hubertleveillegauvin/)  
+Twitter: [@hleveillegauvin](https://twitter.com/hleveillegauvin)  
