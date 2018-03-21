@@ -6,6 +6,7 @@ This GitHub repository contains the main program and its dependencies, along wit
 
 ## Installation
 
+### Installing dependencies
 weather requires the following command-line tools to be installed:
 * locateme : http://iharder.sourceforge.net/current/macosx/locateme/
 * jq : http://stedolan.github.io/jq/
@@ -24,6 +25,14 @@ brew install locateme
 brew install jq
 brew figlet
 ```
+
+### Downloading weather
+
+To download the weather tool, simply type the following command in a terminal:
+
+git clone --recursive https://github.com/hleveillegauvin/weather
+
+
 
 
 
