@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Install script for Weather
+# Written by: Hubert Léveillé Gauvin
+
+mkdir weather
+cat xaa xab > weather/city.list.json
+cp weather ./weather
+cp config.sh ./weather
+
+cp weather.1 /usr/local/share/man/man1
+cp -R weather /usr/bin
+rm -d weather
