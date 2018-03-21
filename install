@@ -9,4 +9,5 @@ rm xab
 cd ..
 
 cp weather.1 /usr/local/share/man/man1
-sudo cp -R weather-tool /usr/bin
+mkdir ~/weather-tool
+cp  ./weather-tool/* ~/weather-tool
