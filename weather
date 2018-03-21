@@ -1,0 +1,488 @@
+#!/usr/bin/env bash
+# Weather
+# Written by: Hubert Léveillé Gauvin
+
+# DEPENDENCIES: 
+#	o locateme command
+#	o jq command
+#	o city.list.json
+
+# INSENSITIVE PATTERNS:
+shopt -s nocasematch # matches patterns in a case-insensitive fashion
+
+# DESC: check if command exists
+# ARGS: command name
+function script_check_dependency_command(){
+if command -v $1 >/dev/null 2>&1 ; then
+:
+else
+    echo -e "\033[0;31m'$1': command not found.\033[0m"
+    exit
+fi
+}
+
+# DESC: check if key file exists
+# ARGS: None
+#ID="6ff3595d244317ecf2a4a17976e77283"
+function script_check_keyfile() {
+if [[ -s key ]]
+then
+	ID=$(head -1 key)
+else
+	> key
+	ID=$(head -1 key)
+fi
+# Check if ID is empty
+if [[ $ID == "" ]] 
+then 
+	key_missing="true"
+fi
+}
+
+# DESC: check if bookmark file exists
+# ARGS: None
+function script_check_bookmarkfile() {
+if [[ -s bookmark ]]
+then
+	:
+else
+	> bookmark
+fi
+}
+
+
+# DESC: Creat tmp file
+# ARGS: None
+
+function script_tmp() {
+           tempfoo=`basename $0`
+           TMPFILE=`mktemp -q /tmp/${tempfoo}.XXXXXX`
+           if [ $? -ne 0 ]; then
+                   -e "\033[0;31m'$0': Can't create temp file, exiting...\033[0m"
+                   exit
+           fi
+}
+
+# DESC: Usage help
+# ARGS: None
+
+function script_usage() {
+    cat << EOF
+
+Usage:
+
+If no option is provided, outputs the current temperature in celcius. Uses locateme to determine current location based on Apple's geolocation services. 
+
+		-c, --compact
+				Print detailed information in csv format: city name, country, current 
+				temperature,description,minimum temperature for the day,maximum 
+				temperature for the day,pressure,humidity,wind speed. If both -c and -v 	
+				are used, -c is ignored.
+				
+		-b action|argument, --bookmark action | argument
+				Create, print, or remove bookmarks for favorite locations. 
+				
+						Possible argument:
+						<bookmarkname>=<cityID>	:	Save new bookmark.
+						
+						Possible actions:
+						print : Print list of all bookmarks.
+						remove number : Remove bookmark based on line number.
+					
+		-h, --help
+				Print a brief help message.
+				
+		-i argument, --id argument
+				Print weather for specific city ID. If both -i and -l are used, -l is 
+				ignored.
+				
+		-k action | argument, --key action | argument
+				Add, print, or remove openweathermap.org API. API key is added as an 
+				argument.
+				
+						Possible actions:
+						print : Print API key.
+						remove : Remove API key.
+				
+		-l argument, --location argument
+				Print weather for specific city name. If no argument is provided, current 
+				location is used. 
+				
+						Possible arguments:
+						bookmarkname
+						city,[2-letter ISO 3166 country code] : City name is required. Country code optional.
+				
+				If city name contains space, use " ". Country code must be 2-letter ISO 
+				3166 format (https://en.wikipedia.org/wiki/ISO_3166-1). If both -i and -l 
+				are used, -l is ignored. 
+				
+		-r, --raw
+				Print unformatted json file. Can be used even if jq is not installed. When 
+				-r option is used, options -c, -d, and -v are ignored
+		
+		-u, --unit
+				Select preferred unit. Possible arguments: 
+						kelvin,k,si	
+						metric,m,celcius,c	
+						imperial,i,fahrenheit,f
+		
+		-v, --verbose
+				Print detailed information in graphic format. Figlet command required. If 
+				both -c and -v are used, -c is ignored.
+
+
+Report bugs to: leveillegauvin.1@osu.edu
+EOF
+}
+
+
+# DESC: Find CityID based on param_location
+# ARGS: -l
+function script_param_location() {
+	city=$(awk -F, '{ print $1 }' <<< $param_location)
+	country=$(awk -F, '{ print $2 }' <<< $param_location)
+	jq -re --arg CITY "$city" -c ' .[] | select(.name | match($CITY;"i"))' city.list.json | jq -re --arg COUNTRY "$country" -c ' . | select(.country | match($COUNTRY;"i"))' > $TMPFILE
+	
+number_of_matches=$(cat $TMPFILE | wc -l | sed 's/[[:space:]]//g')
+
+	if  [ $number_of_matches == 0 ]
+		then
+		echo -e "\033[0;31mNo matches found for location: $param_location.\033[0m"
+		exit
+	elif [ $number_of_matches == 1 ]
+		then
+		cityID=$(jq '.id' $TMPFILE)
+	else 
+		echo "'$number_of_matches' cities were found matching \"$param_location\"."
+		jq -c '.' $TMPFILE
+		while read -p "Select the ID that corresponds to the city you are looking for: " cityID; do
+			if [[ $cityID =~ ^[0-9]+$ ]]
+				then
+				break
+			else
+				echo -e "\033[0;31m\"$cityID\" is not a valid city ID.\033[0m"
+			fi
+		done										
+	fi
+}
+
+#cityID=$(awk -F= '$1 == "$param_bookmark" { print $2 }' bookmark)
+
+# DESC: Center-align text
+# ARGS: $1=String to be centered; $2 (optional)=Longest string (optional). This is useful to center based on something smaller than the whole screen. 
+
+centerQ(){
+if [ -z "$2" ]; then		# if no $2 is provided
+  textsize=${#1}
+  width=$(tput cols)		# default is 80-char line
+  span=$((($width + $textsize) / 2))
+  printf "%${span}s\n" "$1"
+else
+  textsize=${#1}
+  width=${#2}				# size of provided string
+  span=$((($width + $textsize) / 2))
+  printf "%${span}s\n" "$1" 
+fi
+}
+
+
+# DESC: Fetch detailed info for -d and -v
+# ARGS: None
+function script_fetch_info() {
+city=$(jq '.name' $TMPFILE | sed 's/"//g')
+country=$(jq '.sys.country' $TMPFILE | sed 's/"//g')
+temp=$(jq '.main.temp' $TMPFILE | xargs printf "%.0f\n") 
+temp_min=$(jq '.main.temp_min' $TMPFILE | xargs printf "%.0f\n")
+temp_max=$(jq '.main.temp_max' $TMPFILE | xargs printf "%.0f\n")
+pressure=$(jq '.main.pressure' $TMPFILE)
+humidity=$(jq '.main.humidity' $TMPFILE)
+	if [[ $unit == "imperial" ]]
+		then
+		wind_speed=$(jq '.wind.speed' $TMPFILE)
+	else
+		wind_speed=$(jq '.wind.speed' $TMPFILE) # this is meter/sec.
+		wind_speed=$(echo "$wind_speed * 3.6" | bc)
+	fi
+description=$(jq '.weather | .[] | .description' $TMPFILE | sed 's/"//g' | tr "\n" "," | sed 's/,$//g' | sed 's/\(.*\),/\1\ \& /' | awk '{for(j=1;j<=NF;j++){ $j=toupper(substr($j,1,1)) substr($j,2) }}1')
+}
+
+
+# DESC: Print verbose results
+# ARGS: None
+
+function script_print_verbose(){
+longest_string=$(echo "Weather in $city,$country" | awk '{ print length }')
+if [[ $longest_string < $(echo "$temp""$symbol" | figlet -W | awk '{ print length }' | sort -n -s | head -n 1) ]]
+	then
+	longest_string=$(echo "$temp""$symbol" | figlet -W | awk '{ print length }' | sort -n -s | head -n 1)
+fi
+if [[ $longest_string < $(echo "$today"| awk '{ print length }') ]]
+	then
+	longest_string=$(echo "$today"| awk '{ print length }')
+fi
+
+longest_string=$(echo "$longest_string + 1" | bc) #adds one character to longest string
+
+header=$(printf %"$longest_string"s |tr " " "-")
+
+# FILGET -W, line-by-line
+
+function print_figlet_with_centerQ() {
+figlet_line1=$(echo "$temp""$symbol" | figlet -W | head -1)
+figlet_line2=$(echo "$temp""$symbol" | figlet -W | head -2 | tail -1)
+figlet_line3=$(echo "$temp""$symbol" | figlet -W | head -3 | tail -1)
+figlet_line4=$(echo "$temp""$symbol" | figlet -W | head -4 | tail -1)
+figlet_line5=$(echo "$temp""$symbol" | figlet -W | head -5 | tail -1)
+figlet_line6=$(echo "$temp""$symbol" | figlet -W | head -6 | tail -1)
+centerQ "$figlet_line1" $header
+centerQ "$figlet_line2" $header
+centerQ "$figlet_line3" $header
+centerQ "$figlet_line4" $header
+centerQ "$figlet_line5" $header
+centerQ "$figlet_line6" $header
+}
+
+
+
+echo "$header"
+centerQ "Weather for $city,$country" $header
+echo "$header"
+print_figlet_with_centerQ
+centerQ "$description" $header
+echo "$header"
+centerQ "Min: $temp_min$symbol Max: $temp_max$symbol" $header
+echo "$header"
+centerQ "Pressure: "$pressure"hpa" $header
+centerQ "Humidity: $humidity%" $header
+centerQ "Wind: $wind_speed$wind_unit" $header
+echo "$header"
+}
+
+# DESC: Print compact results
+# ARGS: None
+function script_print_compact(){
+echo -e "$city,$country,Currently:$temp$symbol,$description,Min:$temp_min$symbol,Max:$temp_max$symbol,Pressure:"$pressure"hpa,Humidity:$humidity%,Wind:$wind_speed$wind_unit"
+exit
+}
+
+
+# DESC: Parameter parser
+# ARGS: $@ (optional): Arguments provided to the script
+function parse_params() {
+ while [[ -n "$1" ]]; do
+ 	case "$1" in
+			-b|--bookmark)
+				param_bookmark="$2"
+				if [[ "$2" == "" ]]
+					then
+					echo -e "\033[0;31m-b: No argument provided.\033[0m"
+					exit
+				elif [[ "$2" == "print" ]]
+					then
+					 awk '//{print NR"\t"$0}' bookmark
+					exit
+				elif [[ "$2" == "remove" ]]
+					then
+						if [[ "$3" == "" ]]
+							then
+							echo -e "\033[0;31m-b remove: No argument provided.\033[0m"
+							exit
+						fi
+					max_line_number=$(awk '//{print NR"\t"$0}' bookmark | wc -l | sed 's/[[:space:]]//g')
+					selected_line_number="$3"
+						if [[ "$selected_line_number" =~ ^[1:$max_line_number]$ ]]
+							then
+							sed "$selected_line_number"d bookmark > $TMPFILE
+							cat $TMPFILE > bookmark
+							exit
+						else	
+							echo -e "\033[0;31m"$selected_line_number": Invalid line number.\033[0m"
+							exit
+						fi
+				else
+					echo "$param_bookmark" >> bookmark
+					exit
+				fi	
+				shift
+				;;
+			-h|--help)
+				param_help="true"
+				;;
+			-c|--compact)
+				param_compact="true"
+				;;	
+			-i|--id)
+				param_cityID="$2"
+				shift
+				;;
+			-k|--key)
+				param_key="$2"
+				if [[ "$param_key" == "remove" ]]
+					then
+					>key
+				elif [[ "$param_key" == "print" ]]
+					then
+					cat key						
+				else	
+					echo "$param_key" > key
+				fi
+				key_option="true"
+				shift
+				;;
+ 			-l|--location)
+ 				param_location="$2"
+ 				bookmarkID=$(awk -F= '$1 == PARAM_LOCATION {print $2}' PARAM_LOCATION="$param_location" bookmark)
+ 				shift
+ 				;;
+ 			-r|--raw)
+ 				param_raw="true"
+ 				;;
+ 			-u|--unit)
+ 					if [[ "$2" =~ ^(si)$|^(k)$|^(kelvin)$ ]]
+						then
+						unit="kelvin"
+						symbol="K"
+						wind_unit="km/h"
+					elif [[ "$2" =~ ^(metric)$|^(m)$|^(celcius)$|^(c)$ ]]
+						then
+						unit="metric"
+						symbol="C"
+						wind_unit="km/h"
+					elif [[ "$2" =~ ^(imperial)$|^(i)$|^(fahrenheit)$|^(f)$ ]]										
+						then
+						unit="imperial"	
+						symbol="F"
+						wind_unit="m/h"	
+					elif [[ "$2" == "" ]]
+						then
+						echo -e "\033[0;31m-u: No unit provided. \"Metric\" used instead.\033[0m"
+					else		
+						echo -e "\033[0;31m-u $2: Unrecognized unit. \"Metric\" used instead.\033[0m"
+					fi	
+				shift
+				;;
+			-v|--verbose)
+				param_verbose="true"
+				;;
+ 			*)
+		 		echo -e "\033[0;31mInvalid parameter was provided: $1\033[0m"
+               	;;
+           	esac
+           	shift
+	done
+}
+
+# DESC: Printing results
+# ARGS: None
+
+function script_print() {
+
+if [[ $(jq '.message' $TMPFILE | sed 's/"//g') == "Invalid API key. Please see http://openweathermap.org/faq#error401 for more info." ]]
+then 
+echo -e "\033[0;31mInvalid API key. Update API key using -k or see http://openweathermap.org/faq\#error401 for more info.\033[0m"
+exit
+elif [[ $(jq '.main.temp' $TMPFILE) == "null" ]]
+	then
+	echo -e "\033[0;31mnull\033[0m"
+exit
+fi
+
+script_fetch_info	
+	
+if [[ $param_verbose == "true" ]]
+	then
+	script_check_dependency_command figlet
+fi
+	
+	if [[ $param_raw == "true" ]]
+		then
+			if [[ $param_verbose == "true" ]]
+				then
+				echo -e "\033[0;31mWhen option -r is provided, option -v is ignored.\033[0m"
+			fi
+		cat $TMPFILE
+	else
+		if command -v jq >/dev/null 2>&1
+			then
+				if [[ $param_verbose == "true" ]]
+					then
+					script_print_verbose
+				elif [[ $param_compact == "true" ]]
+					then
+					script_print_compact
+				else
+					jq '.main.temp' $TMPFILE | sed "s/$/$symbol/g"
+				fi
+		else
+    		echo -e "\033[0;31m'$1': command not found. Raw mode enabled instead.\033[0m"
+    		cat $TMPFILE 
+    	fi
+fi
+}
+	
+# DESC: Main control flow
+# ARGS: $@ (optional): Arguments provided to the script
+function main() {
+	
+		
+	
+	if [ $# -eq 0 ] # If no arguments supplied, i.e. default option.
+  		then
+  			
+  			script_check_dependency_command locateme
+  		
+  			curl -s "http://api.openweathermap.org/data/2.5/weather?lat="$my_lat"&"$my_lon"&units="$unit"&appid=$ID" > $TMPFILE 
+	else
+    			
+    
+    		if [[ -n "$param_cityID" ]]	# if param_cityID exists 
+    			then
+    		 	curl -s "http://api.openweathermap.org/data/2.5/weather?id=$param_cityID&units=$unit&appid=$ID" > $TMPFILE
+    		 		if 	[[ -n "$param_location" ]] # if param_location exists 
+    		 			then
+    		 			echo -e "\033[0;31mWhen option -i is provided, option -l is ignored.\033[0m"
+    		 		fi
+    		 				
+    		elif [[ -n "$param_location" ]]
+    			then
+    				if [[ -n "$bookmarkID" ]]
+    					then
+    					    		 	curl -s "http://api.openweathermap.org/data/2.5/weather?id=$bookmarkID&units=$unit&appid=$ID" > $TMPFILE
+    				else		
+    				script_param_location
+    				curl -s "http://api.openweathermap.org/data/2.5/weather?id=$cityID&units=$unit&appid=$ID" > $TMPFILE
+    				fi
+    		else
+  			curl -s "http://api.openweathermap.org/data/2.5/weather?lat="$my_lat"&"$my_lon"&units="$unit"&appid=$ID" > $TMPFILE
+    			   				
+			fi
+    fi
+script_print 
+}
+
+
+# Main program	
+script_check_keyfile
+script_check_bookmarkfile
+script_tmp
+source config.sh
+parse_params "$@"
+    if [[ "$param_help" == "true" ]]
+    	then
+    	script_usage
+    	exit
+    fi
+	if [[ $key_option == "true" ]]
+		then
+		if [[ "$param_key" == "" ]]
+					then
+					echo -e "\033[0;31m-k: Missing argument.\033[0m"
+		fi
+		exit
+	fi
+	if [[ $key_missing == "true" ]]
+		then
+		echo -e "\033[0;31mAPI key missing. Use -k to provide one.\033[0m"
+		exit
+	fi
+main "$@"
