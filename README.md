@@ -60,6 +60,15 @@ An API key is needed to use the weather tool. You can signup for an API key at: 
 The following command can be used to add your key:
 
     weather -k 6ff3595d244317ecf2a4a17976e7XXXX
+    
+To see which key is associated with the command:
+
+    weather -k print
+
+To remove key:
+
+    weather -k remove    
+    
 ## Usage
 
 If no option is provided, outputs the current temperature in celcius. Uses locateme to determine current location based on Apple's geolocation services. 
