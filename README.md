@@ -26,11 +26,14 @@ brew install jq
 brew figlet
 ```
 
-### Downloading weather
+### Downloading the weather tool
 
-To download the weather tool, simply type the following command in a terminal:
+To download the weather tool, use the green download button on the main repository page, or simply type the following commands in a terminal:
 
+```
+cd ~/Downloads # Go to downloads directory or wherever you want to install,
 git clone --recursive https://github.com/hleveillegauvin/weather
+```
 
 
 
