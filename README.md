@@ -7,7 +7,7 @@ This GitHub repository contains the main program and its dependencies, along wit
 ## Installation
 
 ### Installing dependencies
-weather requires the following command-line tools to be installed:
+The weather tool requires the following command-line tools to be installed:
 * locateme : http://iharder.sourceforge.net/current/macosx/locateme/
 * jq : http://stedolan.github.io/jq/
 * figlet : http://www.figlet.org/
@@ -31,8 +31,26 @@ brew figlet
 To download the weather tool, use the green download button on the main repository page, or simply type the following commands in a terminal:
 
 ```
-cd ~/Downloads # Go to downloads directory or wherever you want to install,
+cd ~/Downloads          # Go to downloads directory or wherever you want to download
 git clone --recursive https://github.com/hleveillegauvin/weather
+```
+
+### Installing the weather tool
+
+To install the weather tool, simply type the following commands in a terminal:
+
+```
+cd weather
+bash install
+```
+
+### Removing installation directory
+
+Once the tool is installed, you can remove the installation directory by typing the following command in a terminal:
+
+```
+cd ~/Downloads          # Go to downloads directory or wherever you downloaded
+rm -d weather
 ```
 
 
