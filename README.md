@@ -53,6 +53,13 @@ cd ~/Downloads          # Go to downloads directory or wherever you downloaded
 rm -rf weather
 ```
 
+## Setup
+
+An API key is needed to use the weather tool. You can signup for an API key at: http://openweathermap.org/appid. After signing-up online, you’ll receive your API key by email.
+
+The following command can be used to add your key:
+
+    weather -k 6ff3595d244317ecf2a4a17976e7XXXX
 
 
 
