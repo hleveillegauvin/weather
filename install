@@ -9,5 +9,8 @@ rm xab
 cd ..
 
 cp weather.1 /usr/local/share/man/man1
-mkdir ~/weather-tool
-cp  ./weather-tool/* ~/weather-tool
+mkdir /usr/local/weather-tool
+cp  ./weather-tool/* /usr/local/weather-tool
+cd /usr/local/weather-tool
+echo "export PATH=$PATH:/usr/local/weather-tool" >> ~/.bash_profile
+source ~/.bash_profile
