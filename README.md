@@ -186,6 +186,7 @@ To remove a bookmark based on its line number:
 - [ ] Rewrite the code so it doesn't depend on jq
 - [ ] Add forecast option
 - [ ] Add Twitter option to create tweet version of the output that could be piped to Twitterbot
+- [ ] Create a brew package
 
 ## Contact details
 Hubert Léveillé Gauvin
