@@ -23,7 +23,7 @@ Once brew is installed, type the following command in a terminal to install loca
 ```
 brew install locateme
 brew install jq
-brew figlet
+brew install figlet
 ```
 
 ### Downloading the weather tool
