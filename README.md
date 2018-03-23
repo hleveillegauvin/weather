@@ -37,7 +37,7 @@ git clone --recursive https://github.com/hleveillegauvin/weather
 
 ### Installing the weather tool
 
-To install the weather tool, simply type the following commands in a terminal:
+To install the weather tool, simply type the following commands in a terminal. First, assemble the city.list file:
 
 ```
 cd weather/weather-tool
@@ -45,10 +45,21 @@ cat xaa xab > city.list.json
 rm xaa
 rm xab
 cd ..
+```
 
-cp weather.1 /usr/local/share/man/man1
-sudo mkdir /usr/local/weather-tool
-sudo cp  ./weather-tool/* /usr/local/weather-tool
+Second, copy the user manuals in the appropriate directory:
+
+    cp weather.1 /usr/local/share/man/man1
+    
+Third, create a directory in `/usr/local/` for the tool. You will need to enter your password:
+
+    sudo mkdir /usr/local/weather-tool
+
+Finally, copy the weather tool in the appropriate directory and update the bash_profile:
+
+```
+
+sudo install -m644  ./weather-tool/* /usr/local/weather-tool
 cd /usr/local/weather-tool
 echo "export PATH=$PATH:/usr/local/weather-tool" >> ~/.bash_profile
 source ~/.bash_profile
