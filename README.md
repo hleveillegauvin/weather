@@ -43,6 +43,7 @@ To install the weather tool, simply type the following commands in a terminal. F
 cd weather/weather-tool
 cat xaa xab > city.list.json
 chmod +x weather
+chmod +x config.sh
 rm xaa
 rm xab
 cd ..
