@@ -52,17 +52,16 @@ Second, copy the user manuals in the appropriate directory:
 
     cp weather.1 /usr/local/share/man/man1
     
-Third, create a directory in `/usr/local/` for the tool. You will need to enter your password:
+Third, create a directory in `~/` for the tool:
 
-    sudo mkdir /usr/local/weather-tool
+    mkdir ~/weather-tool
 
 Finally, copy the weather tool in the appropriate directory and update the bash_profile:
 
 ```
-
-sudo cp ./weather-tool/* /usr/local/weather-tool
-cd /usr/local/weather-tool
-echo "export PATH=$PATH:/usr/local/weather-tool" >> ~/.bash_profile
+cp ./weather-tool/* ~/weather-tool
+cd ~/weather-tool
+echo "export PATH=$PATH:~/weather-tool" >> ~/.bash_profile
 source ~/.bash_profile
 ```
 
