@@ -183,7 +183,7 @@ change to other systems:
 
 	weather -u f
 
-The most ambiguous way to search for a city is to used a cityID:
+The most ambiguous way to search for a city is to used a cityID (a list of all cityID can be found at: http://openweathermap.org/help/city_list.txt):
 
 	weather -i 4256038 -u f
 
