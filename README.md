@@ -56,8 +56,8 @@ To install the weather tool, simply type the following commands in a terminal. F
 
 ```
 cd weather/weather-tool
-chmod +x weather
-chmod +x config.sh
+chmod +x weather/weather-tool/weather
+chmod +x weather/weather-tool/config.sh
 cd ..
 ```
 
