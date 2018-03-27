@@ -18,11 +18,26 @@ The simplest way to install these command-line tools is to use brew. To check if
 
 If the terminal replies with a line such as `/usr/local/bin/brew`, brew is installed and you are good to go. Otherwise, visit https://brew.sh/ for instructions.
 
-Once brew is installed, type the following command in a terminal to install locateme, jq, and figlet:
+Weather uses the public-domain command-line tool Locateme find your location (latitude, longitude, etc) using Apple's geolocation services. Once brew is installed, type the following command in a terminal to install locateme:
 
 ```
 brew install locateme
-brew install jq
+```
+
+To see if the installation worked, simply type the following command in a terminal:
+
+    locateme
+    
+If `locateme` was insalled properly, your current coordinates should be printed in your terminal. If you get an error message, it could be because Location Services are disabled on your Mac. To enabled Location services, go to System Preferences -> Security & Privacy -> Privacy. 
+
+Next, you'll need to install jq:
+
+    brew install jq
+    
+Finally, the -v|-verbose option in the weather tool uses figlet to create the visual output. To install figlet, simply type the following command in a terminal:
+
+
+```
 brew install figlet
 ```
 
