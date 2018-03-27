@@ -56,11 +56,8 @@ To install the weather tool, simply type the following commands in a terminal. F
 
 ```
 cd weather/weather-tool
-cat xaa xab > city.list.json
 chmod +x weather
 chmod +x config.sh
-rm xaa
-rm xab
 cd ..
 ```
 
@@ -77,6 +74,8 @@ Finally, copy the weather tool in the appropriate directory and update the bash_
 ```
 cp ./weather-tool/* ~/weather-tool
 cd ~/weather-tool
+curl -L "http://bulk.openweathermap.org/sample/city.list.json.gz" > "city.list.json.gz"
+gunzip -kv "city.list.json.gz"
 echo "export PATH=$PATH:~/weather-tool" >> ~/.bash_profile
 source ~/.bash_profile
 ```
