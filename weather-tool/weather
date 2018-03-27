@@ -94,7 +94,7 @@ If no option is provided, outputs the current temperature in celcius. Uses locat
 				
 		-i argument, --id argument
 				Print weather for specific city ID. If both -i and -l are used, -l is 
-				ignored.
+				ignored. A list of all cityID can be found at: http://openweathermap.org/help/city_list.txt
 				
 		-k action | argument, --key action | argument
 				Add, print, or remove openweathermap.org API. API key is added as an 
@@ -151,6 +151,7 @@ number_of_matches=$(cat $TMPFILE | wc -l | sed 's/[[:space:]]//g')
 		exit
 	elif [ $number_of_matches == 1 ]
 		then
+		jq -c '.' $TMPFILE
 		cityID=$(jq '.id' $TMPFILE)
 	else 
 		echo "'$number_of_matches' cities were found matching \"$param_location\"."
