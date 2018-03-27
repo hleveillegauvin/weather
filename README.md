@@ -30,6 +30,8 @@ To see if the installation worked, simply type the following command in a termin
     
 If `locateme` was insalled properly, your current coordinates should be printed in your terminal. If you get an error message, it could be because Location Services are disabled on your Mac. To enabled Location services, go to System Preferences -> Security & Privacy -> Privacy. 
 
+![instructions-locateme](https://github.com/hleveillegauvin/weather/blob/master/instructions_locateme.jpg)
+
 Next, you'll need to install jq:
 
     brew install jq
