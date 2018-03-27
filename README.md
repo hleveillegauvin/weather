@@ -20,9 +20,7 @@ If the terminal replies with a line such as `/usr/local/bin/brew`, brew is insta
 
 Weather uses the public-domain command-line tool Locateme find your location (latitude, longitude, etc) using Apple's geolocation services. Once brew is installed, type the following command in a terminal to install locateme:
 
-```
-brew install locateme
-```
+    brew install locateme
 
 To see if the installation worked, simply type the following command in a terminal:
 
@@ -38,10 +36,7 @@ Next, you'll need to install jq:
     
 Finally, the -v|-verbose option in the weather tool uses figlet to create the visual output. To install figlet, simply type the following command in a terminal:
 
-
-```
-brew install figlet
-```
+    brew install figlet
 
 ### Downloading the weather tool
 
@@ -95,7 +90,7 @@ rm -rf weather
 
 An API key is needed to use the weather tool. You can signup for an API key at: http://openweathermap.org/appid. After signing-up online, you’ll receive your API key by email.
 
-The following command can be used to add your key:
+The following command can be used to add your key (where you enter your own key):
 
     weather -k 6ff3595d244317ecf2a4a17976e7XXXX
     
