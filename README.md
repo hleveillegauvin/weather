@@ -154,6 +154,12 @@ If no option is provided, outputs the current temperature in celcius. Uses locat
 		-r, --raw
 				Print unformatted json file. Can be used even if jq is not installed. When 
 				-r option is used, options -c, -d, and -v are ignored
+				
+		-s, --simple
+				Like -l, but print first match if there are many matching results.
+				
+		-t, --twitter
+				Print short descriptive in a Twitter-like format. If both -t and either -c or -v are used, -t is ignored.
 		
 		-u, --unit
 				Select preferred unit. Possible arguments: 
