@@ -201,7 +201,7 @@ fi
 }
 
 
-# DESC: Fetch detailed info for -d and -v
+# DESC: Fetch detailed info for -c, -t and -v
 # ARGS: None
 function script_fetch_info() {
 city=$(jq '.name' $TMPFILE | sed 's/"//g')
@@ -218,7 +218,8 @@ humidity=$(jq '.main.humidity' $TMPFILE)
 		wind_speed=$(jq '.wind.speed' $TMPFILE) # this is meter/sec.
 		wind_speed=$(echo "$wind_speed * 3.6" | bc)
 	fi
-description=$(jq '.weather | .[] | .description' $TMPFILE | sed 's/"//g' | tr "\n" "," | sed 's/,$//g' | sed 's/\(.*\),/\1\ \& /' | awk '{for(j=1;j<=NF;j++){ $j=toupper(substr($j,1,1)) substr($j,2) }}1')
+description_raw=$(jq '.weather | .[] | .description' $TMPFILE | sed 's/"//g' | tr "\n" "," | sed 's/,$//g' | sed 's/\(.*\),/\1\ \& /' | awk '{for(j=1;j<=NF;j++){ $j=toupper(substr($j,1,1)) substr($j,2) }}1' | tr '[:upper:]' '[:lower:]')
+description=$(echo "${description_raw^}")
 }
 
 
@@ -283,7 +284,7 @@ exit
 # DESC: Print results in Twitter-like format
 # ARGS: None
 function script_print_twitter(){
-echo -e "It is currently $temp$symbol in $city,$country. $description. The temperature is expected to oscillate between $temp_min$symbol and  $temp_max$symbol."
+echo -e "It is currently $temp$symbol in $city,$country. $description. The temperature is expected to oscillate between $temp_min$symbol and $temp_max$symbol."
 exit
 }
 
