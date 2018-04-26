@@ -73,7 +73,7 @@ cp ./weather-tool/* ~/weather-tool
 cd ~/weather-tool
 curl -L "http://bulk.openweathermap.org/sample/city.list.json.gz" > "city.list.json.gz"
 gunzip -fk "city.list.json.gz"
-echo "export PATH=$PATH:~/weather-tool" >> ~/.bash_profile
+echo "alias weather='~/weather-tool/weather'" >> ~/.bash_profile
 source ~/.bash_profile
 ```
 
