@@ -7,6 +7,7 @@
 #	o jq command
 #	o city.list.json
 
+
 # INSENSITIVE PATTERNS:
 shopt -s nocasematch # matches patterns in a case-insensitive fashion
 
@@ -25,12 +26,12 @@ fi
 # ARGS: None
 #ID="6ff3595d244317ecf2a4a17976e77283"
 function script_check_keyfile() {
-if [[ -s key ]]
+if [[ -s ~/Library/weather-tool/key ]]
 then
-	ID=$(head -1 key)
+	ID=$(head -1 ~/Library/weather-tool/key)
 else
-	> key
-	ID=$(head -1 key)
+	> ~/Library/weather-tool/key
+	ID=$(head -1 ~/Library/weather-tool/key)
 fi
 # Check if ID is empty
 if [[ $ID == "" ]] 
@@ -42,11 +43,11 @@ fi
 # DESC: check if bookmark file exists
 # ARGS: None
 function script_check_bookmarkfile() {
-if [[ -s bookmark ]]
+if [[ -s ~/Library/weather-tool/bookmark ]]
 then
 	:
 else
-	> bookmark
+	> ~/Library/weather-tool/bookmark
 fi
 }
 
@@ -303,7 +304,7 @@ function parse_params() {
 					exit
 				elif [[ "$2" == "print" ]]
 					then
-					 awk '//{print NR"\t"$0}' bookmark
+					 awk '//{print NR"\t"$0}' ~/Library/weather-tool/bookmark
 					exit
 				elif [[ "$2" == "remove" ]]
 					then
@@ -312,19 +313,19 @@ function parse_params() {
 							echo -e "\033[0;31m-b remove: No argument provided.\033[0m"
 							exit
 						fi
-					max_line_number=$(awk '//{print NR"\t"$0}' bookmark | wc -l | sed 's/[[:space:]]//g')
+					max_line_number=$(awk '//{print NR"\t"$0}' ~/Library/weather-tool/bookmark | wc -l | sed 's/[[:space:]]//g')
 					selected_line_number="$3"
 						if [[ "$selected_line_number" =~ ^[1:$max_line_number]$ ]]
 							then
-							sed "$selected_line_number"d bookmark > $TMPFILE
-							cat $TMPFILE > bookmark
+							sed "$selected_line_number"d ~/Library/weather-tool/bookmark > $TMPFILE
+							cat $TMPFILE > ~/Library/weather-tool/bookmark
 							exit
 						else	
 							echo -e "\033[0;31m"$selected_line_number": Invalid line number.\033[0m"
 							exit
 						fi
 				else
-					echo "$param_bookmark" >> bookmark
+					echo "$param_bookmark" >> ~/Library/weather-tool/bookmark
 					exit
 				fi	
 				shift
@@ -343,19 +344,19 @@ function parse_params() {
 				param_key="$2"
 				if [[ "$param_key" == "remove" ]]
 					then
-					>key
+					> ~/Library/weather-tool/key
 				elif [[ "$param_key" == "print" ]]
 					then
 					cat key						
 				else	
-					echo "$param_key" > key
+					echo "$param_key" > ~/Library/weather-tool/key
 				fi
 				key_option="true"
 				shift
 				;;
  			-l|--location)
  				param_location="$2"
- 				bookmarkID=$(awk -F= '$1 == PARAM_LOCATION {print $2}' PARAM_LOCATION="$param_location" bookmark)
+ 				bookmarkID=$(awk -F= '$1 == PARAM_LOCATION {print $2}' PARAM_LOCATION="$param_location" ~/Library/weather-tool/bookmark)
  				shift
  				;;
  			-r|--raw)
