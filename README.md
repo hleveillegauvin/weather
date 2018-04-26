@@ -62,9 +62,10 @@ Second, copy the user manuals in the appropriate directory:
 
     cp weather.1 /usr/local/share/man/man1
     
-Third, create a directory in `~/` for the tool:
+Third, create directories in for the tool:
 
     mkdir ~/weather-tool
+    mkdir ~/Library/weather-tool
 
 Finally, copy the weather tool in the appropriate directory and update the bash_profile:
 
