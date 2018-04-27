@@ -5,7 +5,7 @@
 # DEPENDENCIES: 
 #	o locateme command
 #	o jq command
-#	o city.list.json
+#	o ~/weather-tool/city.list.json
 
 
 # INSENSITIVE PATTERNS:
@@ -147,7 +147,7 @@ EOF
 function script_param_location() {
 	city=$(awk -F, '{ print $1 }' <<< $param_location)
 	country=$(awk -F, '{ print $2 }' <<< $param_location)
-	jq -re --arg CITY "$city" -c ' .[] | select(.name | match($CITY;"i"))' city.list.json | jq -re --arg COUNTRY "$country" -c ' . | select(.country | match($COUNTRY;"i"))' > $TMPFILE
+	jq -re --arg CITY "$city" -c ' .[] | select(.name | match($CITY;"i"))' ~/weather-tool/city.list.json | jq -re --arg COUNTRY "$country" -c ' . | select(.country | match($COUNTRY;"i"))' > $TMPFILE
 	
 number_of_matches=$(cat $TMPFILE | wc -l | sed 's/[[:space:]]//g')
 
@@ -516,7 +516,7 @@ script_print
 script_check_keyfile
 script_check_bookmarkfile
 script_tmp
-source config.sh
+source ~/weather-tool/config.sh
 parse_params "$@"
     if [[ "$param_help" == "true" ]]
     	then
