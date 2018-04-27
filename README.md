@@ -18,7 +18,11 @@ The simplest way to install these command-line tools is to use brew. To check if
 
 If the terminal replies with a line such as `/usr/local/bin/brew`, brew is installed and you are good to go. Otherwise, visit https://brew.sh/ for instructions.
 
-Weather was written in Bash 4. To update to Bash
+Weather was written in Bash 4. To update to Bash 4:
+
+    brew install bash
+    
+Once this is done, restart your terminal.
 
 Weather uses the public-domain command-line tool Locateme find your location (latitude, longitude, etc) using Apple's geolocation services. Once brew is installed, type the following command in a terminal to install locateme:
 
