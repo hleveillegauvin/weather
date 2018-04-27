@@ -17,7 +17,7 @@ function script_check_dependency_command(){
 if command -v $1 >/dev/null 2>&1 ; then
 :
 else
-    echo -e "\033[0;31m'$1': command not found.\033[0m"
+    echo -e "'$1': command not found."
     exit
 fi
 }
@@ -59,7 +59,7 @@ function script_tmp() {
            tempfoo=`basename $0`
            TMPFILE=`mktemp -q /tmp/${tempfoo}.XXXXXX`
            if [ $? -ne 0 ]; then
-                   -e "\033[0;31m'$0': Can't create temp file, exiting...\033[0m"
+                   -e "'$0': Can't create temp file, exiting..."
                    exit
            fi
 }
@@ -153,7 +153,7 @@ number_of_matches=$(cat $TMPFILE | wc -l | sed 's/[[:space:]]//g')
 
 	if  [ $number_of_matches == 0 ]
 		then
-		echo -e "\033[0;31mNo matches found for location: $param_location.\033[0m"
+		echo -e "No matches found for location: $param_location."
 		exit
 	elif [ $number_of_matches == 1 ]
 		then
@@ -167,7 +167,7 @@ number_of_matches=$(cat $TMPFILE | wc -l | sed 's/[[:space:]]//g')
 				then
 				break
 			else
-				echo -e "\033[0;31m\"$cityID\" is not a valid city ID.\033[0m"
+				echo -e "\"$cityID\" is not a valid city ID."
 			fi
 		done										
 	fi
@@ -178,7 +178,7 @@ number_of_matches=$(cat $TMPFILE | wc -l | sed 's/[[:space:]]//g')
 function script_simple_location(){
 	if  [[ $(cat "$TMPFILE") == '{"cod":"404","message":"city not found"}' ]]
 		then
-		echo -e "\033[0;31mNo matches found for location: $simple_location.\033[0m"
+		echo -e "No matches found for location: $simple_location."
 		exit
 	fi	
 }
@@ -300,7 +300,7 @@ function parse_params() {
 				param_bookmark="$2"
 				if [[ "$2" == "" ]]
 					then
-					echo -e "\033[0;31m-b: No argument provided.\033[0m"
+					echo -e "-b: No argument provided."
 					exit
 				elif [[ "$2" == "print" ]]
 					then
@@ -310,7 +310,7 @@ function parse_params() {
 					then
 						if [[ "$3" == "" ]]
 							then
-							echo -e "\033[0;31m-b remove: No argument provided.\033[0m"
+							echo -e "-b remove: No argument provided."
 							exit
 						fi
 					max_line_number=$(awk '//{print NR"\t"$0}' ~/Library/weather-tool/bookmark | wc -l | sed 's/[[:space:]]//g')
@@ -321,7 +321,7 @@ function parse_params() {
 							cat $TMPFILE > ~/Library/weather-tool/bookmark
 							exit
 						else	
-							echo -e "\033[0;31m"$selected_line_number": Invalid line number.\033[0m"
+							echo -e ""$selected_line_number": Invalid line number."
 							exit
 						fi
 				else
@@ -347,7 +347,7 @@ function parse_params() {
 					> ~/Library/weather-tool/key
 				elif [[ "$param_key" == "print" ]]
 					then
-					cat key						
+					cat ~/Library/weather-tool/key						
 				else	
 					echo "$param_key" > ~/Library/weather-tool/key
 				fi
@@ -387,9 +387,9 @@ function parse_params() {
 						wind_unit="m/h"	
 					elif [[ "$2" == "" ]]
 						then
-						echo -e "\033[0;31m-u: No unit provided. \"Metric\" used instead.\033[0m"
+						echo -e "-u: No unit provided. \"Metric\" used instead."
 					else		
-						echo -e "\033[0;31m-u $2: Unrecognized unit. \"Metric\" used instead.\033[0m"
+						echo -e "-u $2: Unrecognized unit. \"Metric\" used instead."
 					fi	
 				shift
 				;;
@@ -397,7 +397,7 @@ function parse_params() {
 				param_verbose="true"
 				;;
  			*)
-		 		echo -e "\033[0;31mInvalid parameter was provided: $1\033[0m"
+		 		echo -e "Invalid parameter was provided: $1"
                	;;
            	esac
            	shift
@@ -411,11 +411,11 @@ function script_print() {
 
 if [[ $(jq '.message' $TMPFILE | sed 's/"//g') == "Invalid API key. Please see http://openweathermap.org/faq#error401 for more info." ]]
 then 
-echo -e "\033[0;31mInvalid API key. Update API key using -k or see http://openweathermap.org/faq\#error401 for more info.\033[0m"
+echo -e "Invalid API key. Update API key using -k or see http://openweathermap.org/faq\#error401 for more info."
 exit
 elif [[ $(jq '.main.temp' $TMPFILE) == "null" ]]
 	then
-	echo -e "\033[0;31mnull\033[0m"
+	echo -e "null"
 exit
 fi
 
@@ -430,7 +430,7 @@ fi
 		then
 			if [[ $param_verbose == "true" ]]
 				then
-				echo -e "\033[0;31mWhen option -r is provided, option -v is ignored.\033[0m"
+				echo -e "When option -r is provided, option -v is ignored."
 			fi
 		cat $TMPFILE
 	else
@@ -449,7 +449,7 @@ fi
 					jq '.main.temp' $TMPFILE | sed "s/$/$symbol/g"
 				fi
 		else
-    		echo -e "\033[0;31m'$1': command not found. Raw mode enabled instead.\033[0m"
+    		echo -e "'$1': command not found. Raw mode enabled instead."
     		cat $TMPFILE 
     	fi
 fi
@@ -475,18 +475,18 @@ function main() {
     		 	curl -s "http://api.openweathermap.org/data/2.5/weather?id=$param_cityID&units=$unit&appid=$ID" > $TMPFILE
     		 		if 	[[ -n "$param_location" ]] # if param_location exists 
     		 			then
-    		 			echo -e "\033[0;31mWhen option -i is provided, option -l is ignored.\033[0m"
+    		 			echo -e "When option -i is provided, option -l is ignored."
     		 		fi
     		 		if 	[[ -n "$simple_location" ]] # if simple_location exists 
     		 			then
-    		 			echo -e "\033[0;31mWhen option -i is provided, option -s is ignored.\033[0m"
+    		 			echo -e "When option -i is provided, option -s is ignored."
     		 		fi
     		 				
     		elif [[ -n "$param_location" ]]
     			then
     				if 	[[ -n "$simple_location" ]] # if simple_location exists 
     		 			then
-    		 			echo -e "\033[0;31mWhen option -l is provided, option -s is ignored.\033[0m"
+    		 			echo -e "When option -l is provided, option -s is ignored."
     		 		fi
     				
     				if [[ -n "$bookmarkID" ]]
@@ -527,13 +527,13 @@ parse_params "$@"
 		then
 		if [[ "$param_key" == "" ]]
 					then
-					echo -e "\033[0;31m-k: Missing argument.\033[0m"
+					echo -e "-k: Missing argument."
 		fi
 		exit
 	fi
 	if [[ $key_missing == "true" ]]
 		then
-		echo -e "\033[0;31mAPI key missing. Use -k to provide one.\033[0m"
+		echo -e "API key missing. Use -k to provide one."
 		exit
 	fi
 main "$@"
