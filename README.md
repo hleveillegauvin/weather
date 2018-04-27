@@ -32,7 +32,7 @@ To see if the installation worked, simply type the following command in a termin
 
     locateme
     
-If `locateme` was insalled properly, your current coordinates should be printed in your terminal. If you get an error message, it could be because Location Services are disabled on your Mac. To enabled Location services, go to System Preferences -> Security & Privacy -> Privacy. 
+If locateme was installed properly, your current coordinates should be printed in your terminal. If you get an error message, it could be because Location Services are disabled on your Mac. To enabled Location services, go to System Preferences -> Security & Privacy -> Privacy. 
 
 ![instructions-locateme](https://github.com/hleveillegauvin/weather/blob/master/instructions_locateme.jpg)
 
@@ -193,6 +193,42 @@ By default, temperature is printed in C. The -u option can be used the
 change to other systems:
 
 	weather -u f
+	
+Alternatively, you can permantly change the default unit to F by modifying the ~/weather-tool/config.sh file:
+
+CHANGE:
+
+```
+#!/usr/bin/env bash
+# Default output
+param_raw="false"
+# Default unit
+unit="metric"
+symbol="C"
+wind_unit="km/h"
+# Default city is current location
+# Find current location
+mylocation=$(locateme -f "lat={LAT},lon={LON}")
+my_lat=$(awk -F, '{print $1}' <<< "$mylocation" | sed 's/lat=//g')
+my_lon=$(awk -F, '{print $2}' <<< "$mylocation" | sed 's/lat=//g')
+````
+
+TO:
+
+```
+#!/usr/bin/env bash
+# Default output
+param_raw="false"
+# Default unit
+unit="imperial"
+symbol="F"
+wind_unit="m/h"
+# Default city is current location
+# Find current location
+mylocation=$(locateme -f "lat={LAT},lon={LON}")
+my_lat=$(awk -F, '{print $1}' <<< "$mylocation" | sed 's/lat=//g')
+my_lon=$(awk -F, '{print $2}' <<< "$mylocation" | sed 's/lat=//g')
+```
 
 The most ambiguous way to search for a city is to used a cityID (a list of all cityID can be found at: http://openweathermap.org/help/city_list.txt):
 
