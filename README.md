@@ -230,7 +230,7 @@ my_lat=$(awk -F, '{print $1}' <<< "$mylocation" | sed 's/lat=//g')
 my_lon=$(awk -F, '{print $2}' <<< "$mylocation" | sed 's/lat=//g')
 ```
 
-The most ambiguous way to search for a city is to used a cityID (a list of all cityID can be found at: http://openweathermap.org/help/city_list.txt):
+The most unambiguous way to search for a city is to used a cityID (a list of all cityID can be found at: http://openweathermap.org/help/city_list.txt):
 
 	weather -i 4256038 -u f
 
